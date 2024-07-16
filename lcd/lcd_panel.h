@@ -5,7 +5,7 @@
 
 #define LCD_H_RES              480
 #define LCD_V_RES              320
-#define LCD_V_PRT              240
+#define LCD_V_PRT              160
 #define LCD_X_OFFSET           0
 #define LCD_Y_OFFSET           0
 

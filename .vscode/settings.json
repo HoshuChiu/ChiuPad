@@ -43,7 +43,12 @@
         "lv_display.h": "c",
         "chrono": "c",
         "lv_mem.h": "c",
-        "stddef.h": "c"
+        "stddef.h": "c",
+        "esp_lcd_touch.h": "c",
+        "touchpad.h": "c",
+        "esp_lcd_touch_gt911.h": "c",
+        "compare": "c",
+        "lvgl_support.h": "c"
     },
     "idf.flashType": "UART"
 }

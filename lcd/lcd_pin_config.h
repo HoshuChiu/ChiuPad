@@ -27,4 +27,10 @@
 
 #define LCD_PANEL_PIN_NUM_BK_LIGHT       10
 
+#define BUS_IIC_PIN_NUM_SCL         11
+#define BUS_IIC_PIN_NUM_SDA         12
+#define BUS_IIC_TP_USING            0
+#define TOUCH_PANEL_PIN_NUM_RST
+#define TOUCH_PANEL_PIN_NUM_INT
+
 #endif
