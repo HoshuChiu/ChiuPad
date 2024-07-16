@@ -36,7 +36,14 @@
         "assert.h": "c",
         "cstdlib": "c",
         "cstdint": "c",
-        "esp_timer.h": "c"
+        "esp_timer.h": "c",
+        "lvgl.h": "c",
+        "lv_drivers.h": "c",
+        "lv_tft_espi.h": "c",
+        "lv_display.h": "c",
+        "chrono": "c",
+        "lv_mem.h": "c",
+        "stddef.h": "c"
     },
     "idf.flashType": "UART"
 }

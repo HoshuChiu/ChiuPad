@@ -7,12 +7,14 @@
 #include "esp_log.h"
 #include "i80_drive.h"
 #include "lcd_panel.h"
+#include "lvgl.h"
 
 static const char *TAG = "ChiuPad_V1";
-extern SemaphoreHandle_t xMutex;
 static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-    xSemaphoreGiveFromISR(xMutex,NULL);
+    //ESP_LOGI("a","flush_done");
+    lv_display_t *disp_driver = (lv_display_t *)user_ctx;
+    lv_disp_flush_ready(disp_driver);
     return false;
 }
 

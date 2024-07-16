@@ -3,9 +3,10 @@
 
 #include "lcd_pin_config.h"
 
-#define LCD_H_RES              320
-#define LCD_V_RES              170
-#define LCD_X_OFFSET           35
+#define LCD_H_RES              480
+#define LCD_V_RES              320
+#define LCD_V_PRT              240
+#define LCD_X_OFFSET           0
 #define LCD_Y_OFFSET           0
 
 #define LCD_I80_CONTROLLER_ST7789 1
