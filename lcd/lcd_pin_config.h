@@ -25,6 +25,7 @@
 #define BUS_I80_PIN_NUM_DC             5
 #define BUS_I80_PIN_NUM_RST            7
 
+#define LCD_PIN_NUM_TE_SYNC 13
 #define LCD_PANEL_PIN_NUM_BK_LIGHT       10
 
 #define BUS_IIC_PIN_NUM_SCL         11

@@ -30,6 +30,7 @@
 void lcd_backlight_init();
 void lcd_backlight_on();
 void lcd_backlight_off();
+
 void lcd_panel_init(esp_lcd_panel_io_handle_t io_handle, esp_lcd_panel_handle_t *panel);
 
 #endif

@@ -14,4 +14,8 @@ bool lvgl_lock(int timeout_ms);
 void lvgl_unlock(void);
 void lvgl_port_task(void *arg);
 
+#define UI_MODIFY if (lvgl_lock(-1)) { 
+#define UI_MODIFY_END lvgl_unlock();\
+}
+
 #endif

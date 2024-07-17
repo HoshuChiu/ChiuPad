@@ -9,7 +9,7 @@
 #include "lcd_panel.h"
 #include "lvgl.h"
 
-static const char *TAG = "ChiuPad_V1";
+static const char *TAG = "LCD";
 static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     //ESP_LOGI("a","flush_done");

@@ -12,7 +12,7 @@
 #include "i80_drive.h"
 #include "lcd_panel.h"
 
-static const char *TAG = "ChiuPad_V1";
+static const char *TAG = "LCD";
 
 void lcd_backlight_init(){
     //初始化背光灯
@@ -34,8 +34,6 @@ void lcd_backlight_off(){
     gpio_set_level(LCD_PANEL_PIN_NUM_BK_LIGHT, LCD_BK_LIGHT_OFF_LEVEL);
 }
 
-
-
 void lcd_panel_init(esp_lcd_panel_io_handle_t io_handle, esp_lcd_panel_handle_t *panel){
     esp_lcd_panel_handle_t panel_handle = NULL;
     ESP_LOGI(TAG, "Install LCD driver of st7789");
@@ -51,8 +49,9 @@ void lcd_panel_init(esp_lcd_panel_io_handle_t io_handle, esp_lcd_panel_handle_t 
     // Set inversion, x/y coordinate order, x/y mirror according to your LCD module spec
     // the gap is LCD panel specific, even panels with the same driver IC, can have different gap value
     esp_lcd_panel_io_tx_param(io_handle, 0x35, NULL, 0);//开TE信号
-    esp_lcd_panel_invert_color(panel_handle, false);
+    esp_lcd_panel_invert_color(panel_handle, true);
     esp_lcd_panel_set_gap(panel_handle, LCD_X_OFFSET, LCD_Y_OFFSET);
     esp_lcd_panel_swap_xy(panel_handle,true);
+    //esp_lcd_panel_mirror(panel_handle,false,true);
     *panel = panel_handle;
 }

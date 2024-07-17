@@ -13,20 +13,21 @@
 #include "esp_log.h"
 #include "esp_dma_utils.h"
 #include "esp_task_wdt.h"
+#include "nvs_flash.h"
+#include "nvs.h"
+
 #include "i80_drive.h"
 #include "lcd_panel.h"
 #include "touchpad.h"
 
 #include "lvgl.h"
 #include "lvgl_support.h"
+#include "uimgr.h"
 
-typedef struct{
-    esp_lcd_panel_handle_t panel_handle;
-    uint16_t* gmem;
-} display_drv_t;
 
-static lv_obj_t *btn;
-static lv_obj_t *label;
+static void IRAM_ATTR isr_handler(void* arg) {
+    xTaskResumeFromISR((TaskHandle_t)arg);
+}
 
 void app_main(void)
 {
@@ -36,7 +37,7 @@ void app_main(void)
 
     //初始化显存
     uint16_t* gmem=NULL;
-    gmem=(uint16_t*)heap_caps_calloc(sizeof(uint16_t),LCD_H_RES * LCD_V_PRT,MALLOC_CAP_INTERNAL);
+    gmem=(uint16_t*)heap_caps_calloc(sizeof(uint16_t),LCD_H_RES * LCD_V_PRT,MALLOC_CAP_DMA);
     if(gmem){
         ESP_LOGI("[GMem Allocated]","%p",gmem);
     }else{
@@ -83,49 +84,31 @@ void app_main(void)
     esp_timer_handle_t lvgl_tick_timer = NULL;
     ESP_ERROR_CHECK(esp_timer_create(&lvgl_tick_timer_args, &lvgl_tick_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, LVGL_TICK_MSECS * 1000));
-
-    //创建ui控件
-    lv_obj_t *scr = lv_disp_get_scr_act(display);
-    btn = lv_btn_create(lv_scr_act());
-    lv_obj_set_width(btn,20);
-    lv_obj_set_height(btn,200);
-    lv_obj_set_pos(btn,20,20);
-    label=lv_label_create(lv_scr_act());
-    lv_obj_set_size(label,200,20);
-    lv_obj_set_pos(label,200,200);
-    lv_label_set_text(label,"Show TP data");
         
         //lv_obj_invalidate(btn);
     lvgl_lock_init();
     //lv_disp_flush_ready(display);
-    xTaskCreate(lvgl_port_task, "GUI", (8 * 1024), (void*)display, 2, NULL);
+    xTaskCreate(lvgl_port_task, "LVGL_DRV", (8 * 1024), (void*)display, 2, NULL);
+
+    TaskHandle_t lvgl_task = xTaskGetHandle("LVGL_DRV");
+    
+    //同步中断
+    gpio_config_t sync_gpio_config = {
+        .mode = GPIO_MODE_INPUT,
+        .intr_type=GPIO_INTR_POSEDGE,
+        .pin_bit_mask = 1ULL << LCD_PIN_NUM_TE_SYNC,
+        .pull_down_en=0,
+        .pull_up_en=1
+    };
+    ESP_ERROR_CHECK(gpio_config(&sync_gpio_config));
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add(LCD_PIN_NUM_TE_SYNC,isr_handler,lvgl_task);
+
+    uimgr_arg_t* uimgr_arg=malloc(sizeof (uimgr_arg_t));
+    uimgr_arg->indev=indev;
+    uimgr_arg->display=display;
+    xTaskCreate(ui_task, "GUI", (4 * 1024), uimgr_arg, 1, NULL);
     lcd_backlight_on();
-    int x=0,y=0;
-    while(1){
-        if (lvgl_lock(-1)) {
-        //example_lvgl_demo_ui(disp);
-        // Release the mutex
-        //lv_obj_t *scr = lv_disp_get_scr_act(display);
-        //btn = lv_btn_create(scr);
-        //lv_obj_invalidate(scr);
-        
-        lv_obj_set_pos(btn,x,y);
-        //if(x<100)x++;else x=0;
-        //if(y<100)y++;else y=0;
-        //esp_lcd_touch_read_data(touchpad_handle);
-        uint16_t touchpad_x[5]={0,0,0,0,0};
-        uint16_t touchpad_y[5]={0,0,0,0,0};
-        uint8_t touchpad_cnt = 0;
-        //esp_lcd_touch_get_coordinates(touchpad_handle,touchpad_x,touchpad_y,NULL,&touchpad_cnt,5);
-        char touch_data[100];
-        lv_point_t point={.x=0,.y=0};
-        lv_indev_get_point(indev,&point);
-        sprintf(touch_data,"试试x1:%d,y1:%d,x2:%d,y2:%d,x3:%d,y3:%d",(int)point.x,(int)point.y,touchpad_x[1],touchpad_y[1],touchpad_x[2],touchpad_y[2]);
-        lv_label_set_text(label,touch_data);
-        lvgl_unlock();
-        vTaskDelay(1);
-        }
-    }
     
     ESP_LOGI("ok","ok");
 }

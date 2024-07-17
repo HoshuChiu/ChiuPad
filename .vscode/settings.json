@@ -48,7 +48,9 @@
         "touchpad.h": "c",
         "esp_lcd_touch_gt911.h": "c",
         "compare": "c",
-        "lvgl_support.h": "c"
+        "lvgl_support.h": "c",
+        "numbers": "c",
+        "gpio.h": "c"
     },
     "idf.flashType": "UART"
 }

@@ -14,12 +14,13 @@ void lvgl_tick(void* args){
 void lvgl_port_task(void *arg)
 {
     ESP_LOGI("Main", "Starting LVGL task");
+    lv_obj_set_style_bg_color(lv_scr_act(),lv_color_black(),0);
     while (1) {
         // Lock the mutex due to the LVGL APIs are not thread-safe
         if (lvgl_lock(-1)) {
-            
             lv_timer_handler();
             lvgl_unlock();
+            //vTaskSuspend(xTaskGetCurrentTaskHandle());
             vTaskDelay(1);
         }
     }
@@ -36,7 +37,10 @@ void disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color_t * color_
     //if(offsety1<LCD_V_PRT)
         //esp_lcd_panel_draw_bitmap(p_handle, 0,0,LCD_H_RES,LCD_V_PRT, color_p);
     //else
-        esp_lcd_panel_draw_bitmap(p_handle, offsetx1, offsety1, offsetx2 + 1, offsety2 + 1, color_p);
+    
+    //vTaskSuspend(xTaskGetCurrentTaskHandle());
+    esp_lcd_panel_draw_bitmap(p_handle, offsetx1, offsety1, offsetx2 + 1, offsety2 + 1, color_p);
+        
     //lv_disp_flush_ready(disp);
 }
 
@@ -51,8 +55,9 @@ void touchpad_read_cb(lv_indev_t * indev_drv, lv_indev_data_t * data)
     /*`touchpad_is_pressed` and `touchpad_get_xy` needs to be implemented by you*/
     if(pressed&&touchpad_cnt>0) {
         data->point.x=touchpad_x[0];
-        data->point.y=touchpad_y[0];
+        data->point.y=touchpad_y[0]-160;
         data->state = LV_INDEV_STATE_PRESSED;
+        //ESP_LOGI("touch","(%d,%d)pressed",(int)(data->point.x),(int)(data->point.y));
     } else {
         data->state = LV_INDEV_STATE_RELEASED;
     }
